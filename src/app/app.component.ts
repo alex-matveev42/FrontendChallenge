@@ -9,6 +9,7 @@ import { provideMomentDateAdapter } from '@angular/material-moment-adapter'
 import { SWEDEN_FORMAT } from './app.config'
 import { FormsModule } from '@angular/forms'
 import moment from 'moment'
+import { CommonModule } from '@angular/common'
 
 @Component({
   selector: 'app-root',
@@ -20,7 +21,8 @@ import moment from 'moment'
     MatSelectModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    FormsModule
+    FormsModule,
+    CommonModule
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',

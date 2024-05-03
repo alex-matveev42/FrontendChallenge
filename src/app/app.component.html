@@ -1,25 +1,25 @@
 <main class="main">
-  <div class="title-container" *ngIf="selectedDate">
-    {{timeTo}} {{title}}
-  </div>
-  <div class="countdown-container">
-    {{countdown}}
-  </div>
+  <ng-container *ngIf="selectedDate && title">
+    <div class="title-container">{{ timeTo }} {{ title }}</div>
+    <div class="countdown-container">
+      {{ countdown }}
+    </div>
+  </ng-container>
   <div class="fields-container">
     <mat-form-field appearance="outline" floatLabel="always">
       <mat-label>Title</mat-label>
-      <input matInput placeholder="Choose a title" [(ngModel)]="title"/>
+      <input matInput placeholder="Choose a title" [(ngModel)]="title" />
     </mat-form-field>
 
     <mat-form-field appearance="outline" floatLabel="always">
       <mat-label>Date</mat-label>
       <input
         matInput
-        [matDatepickerFilter]="futureDateFilter" 
+        [matDatepickerFilter]="futureDateFilter"
         [matDatepicker]="datepicker"
         placeholder="Choose a date"
         (click)="openDatepicker()"
-        [(ngModel)]="selectedDate" 
+        [(ngModel)]="selectedDate"
       />
       <mat-datepicker #datepicker (closed)="onDatepickerClosed()"></mat-datepicker>
     </mat-form-field>
