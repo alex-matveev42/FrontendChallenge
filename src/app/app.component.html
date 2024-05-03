@@ -1,14 +1,15 @@
 <main class="main">
-  <ng-container *ngIf="selectedDate && title">
-    <div class="title-container">{{ timeTo }} {{ title }}</div>
-    <div class="countdown-container">
+    <div class="text-container" *ngIf="title">
+      <span class="text">{{ timeTo }} {{ title }}</span>
+    </div>
+    
+    <div class="countdown-container" *ngIf="selectedDate">
       {{ countdown }}
     </div>
-  </ng-container>
   <div class="fields-container">
     <mat-form-field appearance="outline" floatLabel="always">
       <mat-label>Title</mat-label>
-      <input matInput placeholder="Choose a title" [(ngModel)]="title" />
+      <input matInput placeholder="Choose a title" [(ngModel)]="title" (blur)="onInputBlur()" />
     </mat-form-field>
 
     <mat-form-field appearance="outline" floatLabel="always">

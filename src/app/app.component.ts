@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core'
+import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core'
 import { RouterOutlet } from '@angular/router'
 import { MatSelectModule } from '@angular/material/select'
 import { MatInputModule } from '@angular/material/input'
@@ -22,48 +22,100 @@ import { CommonModule } from '@angular/common'
     MatDatepickerModule,
     MatNativeDateModule,
     FormsModule,
-    CommonModule
+    CommonModule,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   providers: [provideMomentDateAdapter(SWEDEN_FORMAT)],
 })
-export class AppComponent {
-  timeTo = 'Time to';
-  title: string | null = null;
-  selectedDate: moment.Moment | null = null;
-  countdown: string = '';
+export class AppComponent implements AfterViewInit {
+  timeTo = 'Time to'
+  title: string | null = null
+  selectedDate: moment.Moment | null = null
+  countdown: string = ''
 
   @ViewChild('datepicker') datepicker!: MatDatepicker<Date>
+  @ViewChild('titleRef') titleRef!: ElementRef
 
-   futureDateFilter = (d: Date | null): boolean => {
-    const today = new Date();
-    return !d || d >= today;
+  constructor(private el: ElementRef) {
+    this.loadFromSessionStorage() // Load value from session storage on component initialization
+  }
+
+  ngAfterViewInit(): void {
+    this.adjustFontSize()
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize() {
+    this.adjustFontSize()
+  }
+
+  adjustFontSize() {
+    const container = this.el.nativeElement;
+    const textElement = container.querySelector('.text');
+
+    let fontSize = 1; // initial font size in vw
+    textElement.style.fontSize = fontSize + 'vw';
+    
+    while (textElement.offsetWidth <= container.offsetWidth && fontSize < 100) {
+      fontSize += 1;
+      textElement.style.fontSize = fontSize + 'vw';
+    }
+    
+    fontSize -= 1;
+    textElement.style.fontSize = fontSize + 'vw';
+  }
+
+  futureDateFilter = (d: Date | null): boolean => {
+    const today = new Date()
+    return !d || d >= today
   }
 
   openDatepicker() {
     this.datepicker.open()
   }
 
-  onDatepickerClosed(){
-    if(this.selectedDate){
-      this.startCountdown();
+  onInputBlur() {
+    if (this.title) {
+      this.adjustFontSize()
+      sessionStorage.setItem('title', this.title)
+    }
+  }
+
+  onDatepickerClosed() {
+    if (this.selectedDate) {
+      sessionStorage.setItem('selectedDate', this.selectedDate.toISOString())
+      this.startCountdown()
     }
   }
 
   startCountdown() {
     setInterval(() => {
-      const now = moment();
-      if (!this.selectedDate) return;
+      const now = moment()
+      if (!this.selectedDate) return
 
-      const diff = moment.duration(this.selectedDate.diff(now));
+      const diff = moment.duration(this.selectedDate.diff(now))
 
-      const days = diff.days();
-      const hours = diff.hours();
-      const minutes = diff.minutes();
-      const seconds = diff.seconds();
+      const days = diff.days()
+      const hours = diff.hours()
+      const minutes = diff.minutes()
+      const seconds = diff.seconds()
 
-      this.countdown = `${days} days, ${hours} h, ${minutes} m, ${seconds} s`;
-    }, 1000);
+      this.countdown = `${days} days, ${hours} h, ${minutes} m, ${seconds} s`
+    }, 1000)
+  }
+
+  loadFromSessionStorage() {
+    const storedDate = sessionStorage.getItem('selectedDate')
+    const title = sessionStorage.getItem('title')
+
+    if (storedDate) {
+      this.selectedDate = moment(storedDate)
+      this.startCountdown()
+    }
+
+    if (title) {
+      this.title = title
+    }
   }
 }
